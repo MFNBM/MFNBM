@@ -7,6 +7,9 @@ on:
       - ".github/workflows/build-storage-manager.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,3 +31,13 @@ jobs:
         with:
           name: StorageManager-debug-apk
           path: StorageManager/app/build/outputs/apk/debug/*.apk
+      - name: Publish APK to Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: .
+        run: |
+          cp StorageManager/app/build/outputs/apk/debug/app-debug.apk StorageManager-debug.apk
+          TAG="storagemanager-build-${{ github.run_number }}"
+          gh release create "$TAG" StorageManager-debug.apk \
+            --title "StorageManager debug build ${{ github.run_number }}" \
+            --notes "Debug APK built from commit ${{ github.sha }}. Download StorageManager-debug.apk and install it."
