@@ -30,11 +30,11 @@ class MainActivity : Activity(), Shizuku.OnRequestPermissionResultListener {
 
         val muteBtn = Button(this).apply {
             text = "Set call volume to 0"
-            setOnClickListener { run("media volume --stream 0 --set 0") }
+            setOnClickListener { run("cmd media_session volume --show --stream 0 --set 0; cmd media_session volume --get --stream 0") }
         }
         val restoreBtn = Button(this).apply {
             text = "Restore call volume (4)"
-            setOnClickListener { run("media volume --stream 0 --set 4") }
+            setOnClickListener { run("cmd media_session volume --show --stream 0 --set 4; cmd media_session volume --get --stream 0") }
         }
         val grantBtn = Button(this).apply {
             text = "Grant Shizuku permission"

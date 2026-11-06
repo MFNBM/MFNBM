@@ -2,7 +2,7 @@
 
 Android won't let the volume buttons take the call (voice) stream below 1.
 This app uses [Shizuku](https://shizuku.rikka.app/) to run
-`media volume --stream 0 --set 0`, which sets it to a true 0.
+`cmd media_session volume --stream 0 --set 0`, which sets it to a true 0.
 
 ## Install
 1. This folder lives in the `call-volume-zero` branch; the "Build Call Volume Zero APK" workflow builds it.
