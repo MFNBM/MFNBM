@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import rikka.shizuku.Shizuku
 
@@ -26,15 +27,21 @@ class MainActivity : Activity(), Shizuku.OnRequestPermissionResultListener {
             gravity = Gravity.CENTER
             setPadding(pad, pad, pad, pad)
         }
-        status = TextView(this).apply { textSize = 16f; setPadding(0, 0, 0, pad) }
+        status = TextView(this).apply { textSize = 14f; setTextIsSelectable(true); setPadding(0, 0, 0, pad) }
 
         val muteBtn = Button(this).apply {
             text = "Set call volume to 0"
-            setOnClickListener { run("cmd media_session volume --show --stream 0 --set 0; cmd media_session volume --get --stream 0") }
+            setOnClickListener { run("cmd media_session volume --stream 0 --set 0") }
         }
         val restoreBtn = Button(this).apply {
             text = "Restore call volume (4)"
-            setOnClickListener { run("cmd media_session volume --show --stream 0 --set 4; cmd media_session volume --get --stream 0") }
+            setOnClickListener { run("cmd media_session volume --stream 0 --set 4") }
+        }
+        val checkBtn = Button(this).apply {
+            text = "Check call volume level"
+            setOnClickListener {
+                run("dumpsys audio | grep -A14 -m1 'STREAM_VOICE_CALL' | grep -E 'STREAM_VOICE_CALL|Muted|Min|Max|streamVolume|Current'")
+            }
         }
         val grantBtn = Button(this).apply {
             text = "Grant Shizuku permission"
@@ -43,8 +50,9 @@ class MainActivity : Activity(), Shizuku.OnRequestPermissionResultListener {
         root.addView(status)
         root.addView(muteBtn)
         root.addView(restoreBtn)
+        root.addView(checkBtn)
         root.addView(grantBtn)
-        setContentView(root)
+        setContentView(ScrollView(this).apply { addView(root) })
 
         Shizuku.addRequestPermissionResultListener(this)
     }
@@ -91,7 +99,7 @@ class MainActivity : Activity(), Shizuku.OnRequestPermissionResultListener {
             } catch (t: Throwable) {
                 "Error: ${t.message}"
             }
-            runOnUiThread { status.text = msg.trim() }
+            runOnUiThread { status.text = msg.trim().take(1200) }
         }.start()
     }
 }
